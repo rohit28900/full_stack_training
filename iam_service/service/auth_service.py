@@ -18,7 +18,7 @@ class AuthService:
         self.role_repo = RoleRepository()
         self.permission_repo = PermissionRepository()
 
-    # 🔐 Password verification (FIXED)
+    # Password verification (FIXED)
     def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
         pre_hashed = hashlib.sha256(plain_password.encode()).hexdigest()
         print(f"Pre-hashed password: {pre_hashed}")  # Debugging line

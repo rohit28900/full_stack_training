@@ -22,6 +22,8 @@ def get_current_user(settings):
                 algorithms=[settings.ALGORITHM]
             )
 
+            print("PAYLOAD:", payload)  # Debugging line
+
             return payload
 
         except JWTError:
