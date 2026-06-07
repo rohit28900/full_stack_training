@@ -14,10 +14,7 @@ pipeline {
             steps {
                 dir('iam_service') {
                     sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-
-                    pip install -r requirements.txt
+                    pip3 install -r requirements.txt
                     pytest -v
                     '''
                 }
@@ -26,35 +23,10 @@ pipeline {
 
         stage('Test Academic Service') {
             steps {
-                dir('academic_service') {
+                dir('acadmic_service') {
                     sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-
-                    pip install -r requirements.txt
+                    pip3 install -r requirements.txt
                     pytest -v
-                    '''
-                }
-            }
-        }
-
-        stage('Build IAM Image') {
-            steps {
-                dir('iam_service') {
-                    sh '''
-                    docker build \
-                    -t iam-service:${BUILD_NUMBER} .
-                    '''
-                }
-            }
-        }
-
-        stage('Build Academic Image') {
-            steps {
-                dir('academic_service') {
-                    sh '''
-                    docker build \
-                    -t academic-service:${BUILD_NUMBER} .
                     '''
                 }
             }
