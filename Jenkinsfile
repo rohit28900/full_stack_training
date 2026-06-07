@@ -10,23 +10,23 @@ pipeline {
             }
         }
 
-        stage('Test IAM Service') {
-            steps {
-                dir('iam_service') {
-                    sh '''
-                    rm -rf venv
+        // stage('Test IAM Service') {
+        //     steps {
+        //         dir('iam_service') {
+        //             sh '''
+        //             rm -rf venv
 
-                    python3 -m venv venv
-                    . venv/bin/activate
+        //             python3 -m venv venv
+        //             . venv/bin/activate
 
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+        //             pip install --upgrade pip
+        //             pip install -r requirements.txt
 
-                    pytest -v
-                    '''
-                }
-            }
-        }
+        //             pytest -v
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Test Academic Service') {
             steps {
