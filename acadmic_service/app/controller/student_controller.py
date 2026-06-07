@@ -16,7 +16,7 @@ get_user = get_current_user(settings)
 
 @router.post("/", response_model=StudentResponse)
 def create_student(student: StudentCreate, session: Session = Depends(get_session),
-                   user=Depends(has_permission("user.create", get_user))):
+                   user=Depends(has_permission("user.write", get_user))):
     return student_service.create_student(session, student)
 
 
