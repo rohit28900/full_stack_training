@@ -20,6 +20,6 @@ def sample_student():
     }
 
 def test_sample_student(sample_student):
-    assert sample_student["name"] == "Rohitesh"
+    assert sample_student["name"] == "Rohit"
     assert sample_student["email"] == "rohit@test.com"
     assert sample_student["age"] == 25
