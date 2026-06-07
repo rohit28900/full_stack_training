@@ -14,7 +14,14 @@ pipeline {
             steps {
                 dir('iam_service') {
                     sh '''
-                    pip3 install -r requirements.txt
+                    rm -rf venv
+
+                    python3 -m venv venv
+                    . venv/bin/activate
+
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+
                     pytest -v
                     '''
                 }
@@ -25,11 +32,34 @@ pipeline {
             steps {
                 dir('acadmic_service') {
                     sh '''
-                    pip3 install -r requirements.txt
+                    rm -rf venv
+
+                    python3 -m venv venv
+                    . venv/bin/activate
+
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+
                     pytest -v
                     '''
                 }
             }
+        }
+
+    }
+
+    post {
+
+        always {
+            echo 'Pipeline Finished'
+        }
+
+        success {
+            echo 'All tests passed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline Failed!'
         }
     }
 }
