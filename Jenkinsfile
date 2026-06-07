@@ -12,7 +12,7 @@ pipeline {
 
         stage('Test IAM Service') {
             steps {
-                dir('iam-service') {
+                dir('iam_service') {
                     sh '''
                     python3 -m venv venv
                     . venv/bin/activate
@@ -26,7 +26,7 @@ pipeline {
 
         stage('Test Academic Service') {
             steps {
-                dir('academic-service') {
+                dir('academic_service') {
                     sh '''
                     python3 -m venv venv
                     . venv/bin/activate
@@ -40,7 +40,7 @@ pipeline {
 
         stage('Build IAM Image') {
             steps {
-                dir('iam-service') {
+                dir('iam_service') {
                     sh '''
                     docker build \
                     -t iam-service:${BUILD_NUMBER} .
@@ -51,7 +51,7 @@ pipeline {
 
         stage('Build Academic Image') {
             steps {
-                dir('academic-service') {
+                dir('academic_service') {
                     sh '''
                     docker build \
                     -t academic-service:${BUILD_NUMBER} .
