@@ -3,9 +3,10 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'academic-service'
-        IMAGE_TAG  = "${BUILD_NUMBER}"
-        REGISTRY   = 'rohit28900'  
+        IMAGE_NAME         = 'academic-service'
+        IMAGE_TAG          = "${BUILD_NUMBER}"
+        REGISTRY           = 'rohit28900'
+        RAILWAY_SERVICE_ID = '52f79f2f-6cc8-4ddf-bc42-cfeea6208057'
     }
 
     stages {
@@ -31,29 +32,45 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                dir('acadmic_service') {
-                    sh '''
-                        docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} .
-                        docker tag ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-                                   ${REGISTRY}/${IMAGE_NAME}:latest
-                    '''
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
+        stage('Build and Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-creds',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
+                    dir('acadmic_service') {
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+                            docker buildx create --use --name multiarch || true
+
+                            docker buildx build \
+                                --platform linux/amd64 \
+                                -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+                                -t ${REGISTRY}/${IMAGE_NAME}:latest \
+                                --push \
+                                .
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Railway') {
+            steps {
+                withCredentials([string(
+                    credentialsId: 'railway-token',
+                    variable: 'RAILWAY_TOKEN'
+                )]) {
                     sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-                        docker push ${REGISTRY}/${IMAGE_NAME}:latest
+                        if ! command -v railway &> /dev/null; then
+                            curl -fsSL https://railway.app/install.sh | sh
+                        fi
+
+                        railway up \
+                            --service ${RAILWAY_SERVICE_ID} \
+                            --detach
                     '''
                 }
             }
@@ -75,10 +92,10 @@ pipeline {
             echo 'Pipeline Finished'
         }
         success {
-            echo "Build #${BUILD_NUMBER} pushed: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "✅ Deployed to Railway — Build #${BUILD_NUMBER}"
         }
         failure {
-            echo ' Pipeline Failed — check logs above'
+            echo '❌ Pipeline Failed — check logs above'
         }
     }
 }
