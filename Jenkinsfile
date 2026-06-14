@@ -67,7 +67,7 @@ pipeline {
                         export PATH=$PATH:$HOME/.railway/bin
 
                         if ! command -v railway > /dev/null 2>&1; then
-                            curl -fsSL https://railway.app/install.sh | sh
+                            curl -fsSL https://railway.app/install.sh | bash
                         fi
 
                         export PATH=$PATH:$HOME/.railway/bin
