@@ -173,7 +173,7 @@ pipeline {
                         </body>
                         </html>
                         """,
-                        attachmentsPattern: 'acadmic_service/reports/test-report.html'
+                        attachmentsPattern: 'acadmic_service/reports/*.html'
                     )
                 }
             }
