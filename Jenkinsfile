@@ -7,6 +7,7 @@ pipeline {
         IMAGE_TAG          = "${BUILD_NUMBER}"
         REGISTRY           = 'rohit28900'
         RAILWAY_SERVICE_ID = '52f79f2f-6cc8-4ddf-bc42-cfeea6208057'
+        RAILWAY_ENV_ID     = '21f62e98-a1db-4397-8e2d-7a93f8a50f46'
     }
 
     stages {
@@ -64,17 +65,11 @@ pipeline {
                     variable: 'RAILWAY_TOKEN'
                 )]) {
                     sh '''
-                        export PATH=$PATH:$HOME/.railway/bin
-
-                        if ! command -v railway > /dev/null 2>&1; then
-                            curl -fsSL https://railway.app/install.sh | bash
-                        fi
-
-                        export PATH=$PATH:$HOME/.railway/bin
-
-                        railway up \
-                            --service ${RAILWAY_SERVICE_ID} \
-                            --detach
+                        curl -f -X POST \
+                            -H "Authorization: Bearer $RAILWAY_TOKEN" \
+                            -H "Content-Type: application/json" \
+                            -d "{\\"query\\": \\"mutation { serviceInstanceRedeploy(environmentId: \\\\\\"${RAILWAY_ENV_ID}\\\\\\", serviceId: \\\\\\"${RAILWAY_SERVICE_ID}\\\\\\") }\\"}" \
+                            https://backboard.railway.com/graphql/v2
                     '''
                 }
             }
@@ -96,7 +91,7 @@ pipeline {
             echo 'Pipeline Finished'
         }
         success {
-            echo "✅ Deployed to Railway — Build #${BUILD_NUMBER}"
+            echo "✅ Deployed to Railway via API — Build #${BUILD_NUMBER}"
         }
         failure {
             echo '❌ Pipeline Failed — check logs above'
