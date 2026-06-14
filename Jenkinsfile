@@ -64,9 +64,13 @@ pipeline {
                     variable: 'RAILWAY_TOKEN'
                 )]) {
                     sh '''
-                        if ! command -v railway &> /dev/null; then
+                        export PATH=$PATH:$HOME/.railway/bin
+
+                        if ! command -v railway > /dev/null 2>&1; then
                             curl -fsSL https://railway.app/install.sh | sh
                         fi
+
+                        export PATH=$PATH:$HOME/.railway/bin
 
                         railway up \
                             --service ${RAILWAY_SERVICE_ID} \
